@@ -14,7 +14,7 @@ library(ggplot2)
 library(sf)
 library(htmlwidgets)
 
-hos <- fread("Hosipital_Address.csv")
+hos <- fread("Github/hospitalmap/Hosipital_Address.csv")
 head(hos)
 setnames(hos,c("twd_97_x","twd_97_y"),c("lon","lat"))
 hos <- hos[,.(type_new, lon, lat)]
@@ -54,7 +54,8 @@ wgs.84 <- CRSargs(CRS("+init=epsg:4326"))
 twd.97 <- CRSargs(CRS("+init=epsg:3826"))
 TWD97.TM2.zone.119 <- CRSargs(CRS("+init=epsg:3825"))
 TWD97.TM2.zone.121 <- CRSargs(CRS("+init=epsg:3826"))
-Town <- st_read("population.SHP",options = "ENCODING=big5",crs=3826)
+Town <- st_read("Github/hospitalmap/population.SHP",options = "ENCODING=big5",crs=3826)
+Town <- st_read("Downloads/外傷功德/106年12月行政區人口統計_鄉鎮市區_SHP/106年12月行政區人口統計_鄉鎮市區.SHP",options = "ENCODING=big5",crs=3826)
 
 # turn wgs84
 Town <-  st_transform(Town,crs=4326)
@@ -69,6 +70,13 @@ pal <- colorBin("BuGn", domain = Town$P_CNT, bins = bins)
 labels <- sprintf(
   "<strong>%s<strong>%s</strong><br/>%g",
   Town$COUNTY, Town$TOWN,Town$P_CNT
+) %>% lapply(htmltools::HTML)
+
+x = read_excel("Hosipital_Address.xls")
+
+pop <- sprintf(
+  "<strong>%s</strong><br/><center>%s</center>",
+  x$機構名稱, x$type
 ) %>% lapply(htmltools::HTML)
 
 # intergate label custom info
@@ -92,5 +100,7 @@ m2 <- leaflet(data=Town) %>% addPolygons(
     direction = "auto")) 
 
 m3 <- m2 %>% addTiles() %>%
-  addLegend(pal = pal, values = ~P_CNT, opacity = 0.7, title = NULL,position = "bottomright") %>% addTiles() %>% addAwesomeMarkers(data=df.20,lng=~long,lat=~lat,icon=icons,clusterOptions=markerClusterOptions())
+  addLegend(pal = pal, values = ~P_CNT, opacity = 0.7, title = NULL,position = "bottomright") %>% 
+  addTiles() %>% 
+  addAwesomeMarkers(data=df.20,lng=~long,lat=~lat,icon=icons,clusterOptions=markerClusterOptions(),popup = pop )
 saveWidget(m3, file='map-123.html', selfcontained=F)
