@@ -54,8 +54,7 @@ wgs.84 <- CRSargs(CRS("+init=epsg:4326"))
 twd.97 <- CRSargs(CRS("+init=epsg:3826"))
 TWD97.TM2.zone.119 <- CRSargs(CRS("+init=epsg:3825"))
 TWD97.TM2.zone.121 <- CRSargs(CRS("+init=epsg:3826"))
-Town <- st_read("Github/hospitalmap/population.SHP",options = "ENCODING=big5",crs=3826)
-Town <- st_read("Downloads/外傷功德/106年12月行政區人口統計_鄉鎮市區_SHP/106年12月行政區人口統計_鄉鎮市區.SHP",options = "ENCODING=big5",crs=3826)
+Town <- st_read("population.SHP",options = "ENCODING=big5",crs=3826)
 
 # turn wgs84
 Town <-  st_transform(Town,crs=4326)
